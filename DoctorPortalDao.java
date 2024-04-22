@@ -6,9 +6,6 @@ public class DoctorPortalDao {
     private UserDao userDao;
     private HealthDataDao healthDataDao;
 
-   // Complete all these methods and add more as needed
-
-   /* 
     public DoctorPortalDao() {
         userDao = new UserDao();
         healthDataDao = new HealthDataDao();
@@ -27,6 +24,4 @@ public class DoctorPortalDao {
     }
 
     // Add more methods for other doctor-specific tasks
-    */
 }
-
