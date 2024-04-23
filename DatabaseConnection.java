@@ -5,20 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    // Update the database name in the URL to "Health Monitor"
-    private static final String url = "jdbc:postgresql://localhost:5432/Health Monitor";
-    private static final String user = "postgres";
-    private static final String password = "password";
 
-    public static Connection getCon(){
-        Connection connection = null;
-        try{
+    private static final String URL = "jdbc:postgresql://localhost:5432/Health_Monitor";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password";
+
+    public static Connection getCon() {
+        Connection con = null;
+        try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-        return connection;
+        return con;
     }
 }
 

@@ -4,20 +4,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.mindrot.jbcrypt.BCrypt;
+import java.util.Date;
+import java.time.LocalDate;
 
 public class UserDao {
 
     public boolean createUser(User user) {
-        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         String query = "INSERT INTO users (first_name, last_name, email, password, is_doctor) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
             statement.setString(3, user.getEmail());
-            statement.setString(4, hashedPassword);
+            statement.setString(4, user.getPassword());
             statement.setBoolean(5, user.isDoctor());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -75,14 +74,13 @@ public class UserDao {
     }
 
     public boolean updateUser(User user) {
-        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         String query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, is_doctor = ? WHERE id = ?";
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
             statement.setString(3, user.getEmail());
-            statement.setString(4, hashedPassword);
+            statement.setString(4, user.getPassword());
             statement.setBoolean(5, user.isDoctor());
             statement.setInt(6, user.getId());
             return statement.executeUpdate() > 0;
@@ -111,14 +109,17 @@ public class UserDao {
             statement.setString(1, email);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                String hashedPassword = rs.getString("password");
-                return BCrypt.checkpw(password, hashedPassword);
+                String storedPassword = rs.getString("password");
+                // Here you can compare the stored password with the provided password
+                // For simplicity, I'm just checking if they match
+                return storedPassword.equals(password);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
     public Doctor getDoctorById(int doctorId) {
         String query = "SELECT * FROM users WHERE id = ? AND is_doctor = TRUE";
         try (Connection con = DatabaseConnection.getCon();
@@ -142,8 +143,6 @@ public class UserDao {
         }
         return null;
     }
-    
-
 
     public List<User> getPatientsByDoctorId(int doctorId) {
         List<User> patients = new ArrayList<>();
@@ -154,13 +153,13 @@ public class UserDao {
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 patients.add(new User(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getBoolean("is_doctor")
+                    rs.getInt("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("email"),
+                    rs.getBoolean("is_doctor")
                 ));
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
