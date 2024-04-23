@@ -1,13 +1,14 @@
-
-
-// import com.DataBaseConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 
 public class HealthMonitoringApp {
 
     private static UserDaoExample userDao = new UserDaoExample();
+    private static MedicineReminderManager medicineReminderManager = new MedicineReminderManager();
+    private static DoctorPortalDao doctorPortalDao = new DoctorPortalDao();
+
     /**
      * Test the following functionalities within the Main Application
      *  1. Register a new user
@@ -17,83 +18,81 @@ public class HealthMonitoringApp {
      *  5. Add a medicine reminder
      *  6. Get reminders for a specific user
      *  7. Get due reminders for a specific user
-     *  8. test doctor portal
+     *  8. Test doctor portal
      */
     public static void main(String[] args) {
-       DatabaseConnection databaseConnection = new DatabaseConnection();
-        UserDaoExample userDao = new UserDaoExample();
-        // test register a new user
-        // test Login user (call testLoginUser() here)
-        // Add health data
-        // Generate recommendations
-        // Add a medicine reminder
-        // Get reminders for a specific user
-        // Get due reminders for a specific user
-        //test doctor portal (call testDoctorPortal() here)
+        DatabaseConnection databaseConnection = new DatabaseConnection();
 
+        // 1. Register a new user
+        User user1 = new User(5, "Dalilah", "Dalilah", "dalilah@gmail.com", "guggu", false);
+        userDao.createUser(user1);
 
-        List<User> userList = new ArrayList<>();
+        // 2. Log in the user
+        testLoginUser(user1.getEmail(), user1.getPassword());
 
-        User user1 = new User(5,"Dalilah", "Dalilah","dalilah@gmail.com", "guggu", false);
-        userList.add(user1);
+        // 3. Add health data (For demonstration, I'm adding dummy health data)
+        HealthData healthData = new HealthData(1, user1.getId(), 70.5, 165.0, 8000, 75, LocalDate.now());
+        userDao.addHealthData(healthData);
 
-        for (User users : userList) {
-            userDao.createUser(users);
+        // 4. Generate recommendations
+        // Assuming you have a method in UserDaoExample to fetch health data
+        List<HealthData> userHealthData = userDao.getHealthDataByUserId(user1.getId());
+        List<String> recommendations = new RecommendationSystem().generateRecommendations(userHealthData.get(0)); // Assuming we take the latest health data
+
+        for (String recommendation : recommendations) {
+            System.out.println(recommendation);
         }
+
+        // 5. Add a medicine reminder
+        MedicineReminder reminder = new MedicineReminder(1, user1.getId(), "Aspirin", "1 pill", "Morning", "2024-04-22", "2024-04-30");
+        medicineReminderManager.addReminder(reminder);
+
+        // 6. Get reminders for a specific user
+        List<MedicineReminder> userReminders = medicineReminderManager.getRemindersForUser(user1.getId());
+        System.out.println("Reminders for User " + user1.getId() + ": " + userReminders);
+
+        // 7. Get due reminders for a specific user
+        List<MedicineReminder> dueReminders = medicineReminderManager.getDueReminders(user1.getId());
+        System.out.println("Due Reminders for User " + user1.getId() + ": " + dueReminders);
+
+        // 8. Test doctor portal
+        testDoctorPortal();
     }
 
-
     public static boolean loginUser(String email, String password) {
-        //implement method to login user.
         User user = userDao.getUserByEmail(email);
 
-        if (user != null) {
-            // Compare the stored hashed password with the given password and return result
+        if (user != null && userDao.verifyPassword(user, password)) {
+            return true;
         }
 
         return false;
-
     }
 
-
-    /**
-     * To test the Doctor Portal in your Health Monitoring System, provide a simple test code method that you can add
-     * to your main application class.
-     * In this method, we'll test the following functionalities:
-     * 1. Fetching a doctor by ID
-     * 2. Fetching patients associated with a doctor
-     * 3. Fetching health data for a specific patient
-      */
     public static void testDoctorPortal() {
-        // Replace the doctorId with a valid ID from your database
         int doctorId = 1;
 
-        // Add code to Fetch the doctor by ID
+        // Fetch the doctor by ID
+        Doctor doctor = doctorPortalDao.getDoctorById(doctorId);
+        System.out.println("Fetched Doctor: " + doctor);
 
-        // Add code to Fetch patients associated with the doctor
+        // Fetch patients associated with the doctor
+        List<User> patients = doctorPortalDao.getPatientsByDoctorId(doctorId);
+        System.out.println("Patients associated with Doctor " + doctorId + ": " + patients);
 
-        // Add code to Fetch health data for the patient
-
+        // Fetch health data for the patient
+        int patientId = patients.get(0).getId(); // Assuming there's at least one patient
+        List<HealthData> healthDataList = doctorPortalDao.getHealthDataByPatientId(patientId);
+        System.out.println("Health data for Patient " + patientId + ": " + healthDataList);
     }
 
-
-    /**
-     * To test the login user functionality in your Health Monitoring System, you can
-     * add a test method to your main application class
-     */
-    public static void testLoginUser() {
-        // Replace the email and password with valid credentials from your database
-        String userEmail = "john@example.com";
-        String userPassword = "password";
-
-        boolean loginSuccess = loginUser(userEmail, userPassword);
+    public static void testLoginUser(String email, String password) {
+        boolean loginSuccess = loginUser(email, password);
 
         if (loginSuccess) {
-            // Print to console, "Login Successful"
+            System.out.println("Login Successful");
         } else {
-            // Print to console, "Incorrect email or password. Please try again.");
-            // Show an error message and prompt the user to re-enter their credentials
+            System.out.println("Incorrect email or password. Please try again.");
         }
     }
-
 }
