@@ -30,8 +30,10 @@ public class MedicineReminderManager {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         for (MedicineReminder reminder : reminders) {
-            // Here, you need to implement the logic to check if the reminder is due
-            // For now, let's just check if the current time is after the reminder's schedule
+            if (reminder.getUserId() != userId) {
+                continue;
+            }
+            
             LocalDateTime reminderTime = LocalDateTime.parse(reminder.getSchedule(), formatter);
             if (now.isAfter(reminderTime)) {
                 dueReminders.add(reminder);

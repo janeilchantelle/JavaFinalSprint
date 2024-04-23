@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
-import java.time.LocalDate;
 public class RecommendationSystem {
     private static final int MIN_HEART_RATE = 60;
     private static final int MAX_HEART_RATE = 100;
@@ -55,7 +53,6 @@ public class RecommendationSystem {
             recommendations.add("Your height is within the normal range. Good job!");
         }
 
-        // Add more health data analysis and recommendations as needed
 
         return recommendations;
     }

@@ -17,7 +17,7 @@ public class HealthMonitoringApp {
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -78,7 +78,6 @@ public class HealthMonitoringApp {
 
         if (userDao.verifyPassword(email, password)) {
             System.out.println("Login successful!");
-            // TODO: Implement user dashboard
         } else {
             System.out.println("Invalid email or password. Try again.");
         }
@@ -87,11 +86,11 @@ public class HealthMonitoringApp {
     private static void scheduleAppointment() {
         System.out.println("Enter patient ID:");
         int patientId = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();
 
         System.out.println("Enter doctor ID:");
         int doctorId = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();
 
         System.out.println("Enter appointment date (YYYY-MM-DD):");
         String appointmentDate = scanner.nextLine();
@@ -110,7 +109,7 @@ public class HealthMonitoringApp {
     private static void viewReminders() {
         System.out.println("Enter user ID:");
         int userId = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();
 
         List<Reminder> reminders = userDao.getRemindersByUserId(userId);
         if (reminders.isEmpty()) {
