@@ -4,20 +4,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
-import java.time.LocalDate;
 
 public class UserDao {
 
     public boolean createUser(User user) {
-        String query = "INSERT INTO users (first_name, last_name, email, password, is_doctor) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (username, email, password, isAdmin) VALUES (?, ?, ?, ?)";
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPassword());
-            statement.setBoolean(5, user.isDoctor());
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setBoolean(4, user.isAdmin());  // Assuming isAdmin represents whether the user is a doctor or not
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             if (e.getMessage().contains("duplicate key value violates unique constraint \"users_email_key\"")) {
@@ -30,59 +27,80 @@ public class UserDao {
     }
 
     public User getUserById(int id) {
+        User user = null;
         String query = "SELECT * FROM users WHERE id = ?";
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                return new User(
+                user = new User(
                         rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password"),
-                        rs.getBoolean("is_doctor")
+                        rs.getBoolean("isAdmin")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return user;
     }
 
     public User getUserByEmail(String email) {
+        User user = null;
         String query = "SELECT * FROM users WHERE email = ?";
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                return new User(
+                user = new User(
                         rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password"),
-                        rs.getBoolean("is_doctor")
+                        rs.getBoolean("isAdmin")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return user;
+    }
+
+    public List<User> getPatientsByDoctorId(int doctorId) {
+        List<User> patients = new ArrayList<>();
+        String query = "SELECT * FROM users WHERE doctor_id = ?";
+        try (Connection con = DatabaseConnection.getCon();
+             PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, doctorId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                patients.add(new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getBoolean("isAdmin")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patients;
     }
 
     public boolean updateUser(User user) {
-        String query = "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, is_doctor = ? WHERE id = ?";
+        String query = "UPDATE users SET username = ?, email = ?, password = ?, isAdmin = ? WHERE id = ?";
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPassword());
-            statement.setBoolean(5, user.isDoctor());
-            statement.setInt(6, user.getId());
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setBoolean(4, user.isAdmin());
+            statement.setInt(5, user.getId());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,8 +128,6 @@ public class UserDao {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-                // Here you can compare the stored password with the provided password
-                // For simplicity, I'm just checking if they match
                 return storedPassword.equals(password);
             }
         } catch (SQLException e) {
@@ -121,7 +137,7 @@ public class UserDao {
     }
 
     public Doctor getDoctorById(int doctorId) {
-        String query = "SELECT * FROM users WHERE id = ? AND is_doctor = TRUE";
+        String query = "SELECT * FROM users WHERE id = ? AND isAdmin = TRUE"; // Assuming isAdmin represents whether the user is a doctor
         try (Connection con = DatabaseConnection.getCon();
              PreparedStatement statement = con.prepareStatement(query)) {
             statement.setInt(1, doctorId);
@@ -129,11 +145,10 @@ public class UserDao {
             if (rs.next()) {
                 return new Doctor(
                         rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password"),
-                        true, // Assuming all returned rows are doctors
+                        rs.getBoolean("isAdmin"),
                         rs.getString("medical_license_number"), // Assuming this column exists in the database
                         rs.getString("specialization") // Assuming this column exists in the database
                 );
@@ -142,28 +157,5 @@ public class UserDao {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public List<User> getPatientsByDoctorId(int doctorId) {
-        List<User> patients = new ArrayList<>();
-        String query = "SELECT * FROM users WHERE doctor_id = ?";
-        try (Connection con = DatabaseConnection.getCon();
-             PreparedStatement statement = con.prepareStatement(query)) {
-            statement.setInt(1, doctorId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                patients.add(new User(
-                    rs.getInt("id"),
-                    rs.getString("first_name"),
-                    rs.getString("last_name"),
-                    rs.getString("email"),
-                    rs.getBoolean("is_doctor")
-                ));
-                
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return patients;
     }
 }
