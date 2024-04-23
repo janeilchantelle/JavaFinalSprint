@@ -1,18 +1,3 @@
-You're right. The current CLI application is quite basic and lacks features that would make it a fully functional health monitoring system. Here are some additional features we could consider adding to the CLI to make it more comprehensive:
-
-1. **Reminder System:** The system could send reminders to patients for upcoming appointments or medication timings.
-2. **Appointment Scheduling:** Allow doctors to schedule appointments with their patients.
-3. **Medical Records:** Store and manage medical records for each patient.
-4. **Search Functionality:** Implement search functionality to find users or patients by their name, email, or ID.
-5. **User Authentication:** Add a login system for users to access their profiles securely.
-6. **Data Validation:** Implement validation checks to ensure that the data entered is correct and consistent.
-7. **Error Handling:** Enhance error handling to provide meaningful error messages to the user.
-
-Let's start by updating the README to reflect the current features and then proceed to add some of the missing functionalities to the CLI application.
-
-Here's an updated README:
-
----
 
 # Health Monitoring System
 
@@ -51,7 +36,7 @@ Here's a simplified class diagram illustrating the associations between classes:
 
 The Health Monitoring System is designed to streamline the process of managing healthcare professionals and their patients. 
 
-### Classes and Their Working
+### Classes and Their Workings
 
 - **User:** Represents a general user in the system. It can be either a doctor or a patient.
 - **Doctor:** Inherits from User and represents a healthcare professional with additional attributes like medical license number and specialization.
@@ -76,16 +61,7 @@ Javadoc comments are added to the source code to provide detailed explanations o
 
 ```
 javadoc -d docs *.java
-```
 
-### Source Code Directory Structure
-
-```
-├── HealthMonitoringApp.java
-├── UserDao.java
-├── User.java
-├── Doctor.java
-└── DatabaseConnection.java
 ```
 
 ### Build Process

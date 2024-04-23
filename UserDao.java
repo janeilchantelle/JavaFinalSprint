@@ -91,7 +91,7 @@ public class UserDao {
     public boolean deleteUser(int id) {
         String query = "DELETE FROM users WHERE id = ?";
         try (Connection con = DatabaseConnection.getCon();
-             PreparedStatement statement = con.prepareStatement(query)) {
+            PreparedStatement statement = con.prepareStatement(query)) {
             statement.setInt(1, id);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -103,7 +103,7 @@ public class UserDao {
     public boolean verifyPassword(String email, String password) {
         String query = "SELECT password FROM users WHERE email = ?";
         try (Connection con = DatabaseConnection.getCon();
-             PreparedStatement statement = con.prepareStatement(query)) {
+            PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -119,7 +119,7 @@ public class UserDao {
     public Doctor getDoctorById(int doctorId) {
         String query = "SELECT * FROM users WHERE id = ? AND is_doctor = TRUE";
         try (Connection con = DatabaseConnection.getCon();
-             PreparedStatement statement = con.prepareStatement(query)) {
+            PreparedStatement statement = con.prepareStatement(query)) {
             statement.setInt(1, doctorId);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -144,7 +144,7 @@ public class UserDao {
         List<User> patients = new ArrayList<>();
         String query = "SELECT u.* FROM users u JOIN doctor_patient dp ON u.id = dp.patient_id WHERE dp.doctor_id = ?";
         try (Connection con = DatabaseConnection.getCon();
-             PreparedStatement statement = con.prepareStatement(query)) {
+            PreparedStatement statement = con.prepareStatement(query)) {
             statement.setInt(1, doctorId);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
@@ -162,5 +162,56 @@ public class UserDao {
         }
         return patients;
     }
-    
+
+    public boolean scheduleAppointment(Appointment appointment) {
+        String query = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?)";
+        try (Connection con = DatabaseConnection.getCon();
+            PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, appointment.getPatientId());
+            statement.setInt(2, appointment.getDoctorId());
+            statement.setString(3, appointment.getAppointmentDate());
+            statement.setString(4, appointment.getAppointmentTime());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean createReminder(Reminder reminder) {
+        String query = "INSERT INTO reminders (user_id, description, reminder_date) VALUES (?, ?, ?)";
+        try (Connection con = DatabaseConnection.getCon();
+            PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, reminder.getUserId());
+            statement.setString(2, reminder.getDescription());
+            statement.setString(3, reminder.getReminderDate());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Reminder> getRemindersByUserId(int userId) {
+        List<Reminder> reminders = new ArrayList<>();
+        String query = "SELECT * FROM reminders WHERE user_id = ?";
+        try (Connection con = DatabaseConnection.getCon();
+            PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                reminders.add(new Reminder(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getString("description"),
+                        rs.getString("reminder_date")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reminders;
+    }
 }
+    
+

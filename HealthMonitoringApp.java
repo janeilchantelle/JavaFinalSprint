@@ -2,62 +2,50 @@ import java.util.List;
 import java.util.Scanner;
 
 public class HealthMonitoringApp {
-
-    private static UserDao userDao = new UserDao();
+    private static final UserDao userDao = new UserDao();
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
         while (true) {
-            System.out.println("Choose an option:");
+            System.out.println("Welcome to Health Monitoring System!");
             System.out.println("1. Create User");
-            System.out.println("2. Get User by ID");
-            System.out.println("3. Get User by Email");
-            System.out.println("4. Update User");
-            System.out.println("5. Delete User");
-            System.out.println("6. Verify Password");
-            System.out.println("7. Get Doctor by ID");
-            System.out.println("8. Get Patients by Doctor ID");
-            System.out.println("9. Exit");
+            System.out.println("2. Login");
+            System.out.println("3. Schedule Appointment");
+            System.out.println("4. View Reminders");
+            System.out.println("5. Create Reminder");
+            System.out.println("6. Exit");
+            System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine();  // Consume newline
 
             switch (choice) {
                 case 1:
-                    createUser(scanner);
+                    createUser();
                     break;
                 case 2:
-                    getUserById(scanner);
+                    login();
                     break;
                 case 3:
-                    getUserByEmail(scanner);
+                    scheduleAppointment();
                     break;
                 case 4:
-                    updateUser(scanner);
+                    viewReminders();
                     break;
                 case 5:
-                    deleteUser(scanner);
+                    createReminder();
                     break;
                 case 6:
-                    verifyPassword(scanner);
-                    break;
-                case 7:
-                    getDoctorById(scanner);
-                    break;
-                case 8:
-                    getPatientsByDoctorId(scanner);
-                    break;
-                case 9:
                     System.out.println("Exiting...");
                     return;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice. Try again.");
+                    break;
             }
         }
     }
 
-    private static void createUser(Scanner scanner) {
+    private static void createUser() {
         System.out.println("Enter first name:");
         String firstName = scanner.nextLine();
 
@@ -70,113 +58,87 @@ public class HealthMonitoringApp {
         System.out.println("Enter password:");
         String password = scanner.nextLine();
 
-        System.out.println("Is the user a doctor? (true/false):");
+        System.out.println("Are you a doctor? (true/false)");
         boolean isDoctor = scanner.nextBoolean();
 
-        User newUser = new User(1, firstName, lastName, email, password, false, isDoctor);
+        System.out.println("Are you an admin? (true/false)");
+        boolean isAdmin = scanner.nextBoolean();
+
+        User newUser = new User(0, firstName, lastName, email, password, isAdmin, isDoctor);
         userDao.createUser(newUser);
-        System.out.println("User created successfully.");
+        System.out.println("User created successfully!");
     }
 
-    private static void getUserById(Scanner scanner) {
-        System.out.println("Enter user ID:");
-        int id = scanner.nextInt();
-        User user = userDao.getUserById(id);
-        if (user != null) {
-            System.out.println("User found: " + user.getFirstName() + " " + user.getLastName());
-        } else {
-            System.out.println("User not found.");
-        }
-    }
-
-    private static void getUserByEmail(Scanner scanner) {
-        System.out.println("Enter user email:");
-        String email = scanner.nextLine();
-        User user = userDao.getUserByEmail(email);
-        if (user != null) {
-            System.out.println("User found: " + user.getFirstName() + " " + user.getLastName());
-        } else {
-            System.out.println("User not found.");
-        }
-    }
-
-    private static void updateUser(Scanner scanner) {
-        System.out.println("Enter user ID:");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline character
-
-        System.out.println("Enter first name:");
-        String firstName = scanner.nextLine();
-
-        System.out.println("Enter last name:");
-        String lastName = scanner.nextLine();
-
+    private static void login() {
         System.out.println("Enter email:");
         String email = scanner.nextLine();
 
         System.out.println("Enter password:");
         String password = scanner.nextLine();
 
-        System.out.println("Is the user a doctor? (true/false):");
-        boolean isDoctor = scanner.nextBoolean();
-
-        User updatedUser = new User(id, firstName, lastName, email, password, false, isDoctor);
-        boolean success = userDao.updateUser(updatedUser);
-        if (success) {
-            System.out.println("User updated successfully.");
+        if (userDao.verifyPassword(email, password)) {
+            System.out.println("Login successful!");
+            // TODO: Implement user dashboard
         } else {
-            System.out.println("Failed to update user.");
+            System.out.println("Invalid email or password. Try again.");
         }
     }
 
-    private static void deleteUser(Scanner scanner) {
+    private static void scheduleAppointment() {
+        System.out.println("Enter patient ID:");
+        int patientId = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        System.out.println("Enter doctor ID:");
+        int doctorId = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        System.out.println("Enter appointment date (YYYY-MM-DD):");
+        String appointmentDate = scanner.nextLine();
+
+        System.out.println("Enter appointment time (HH:MM):");
+        String appointmentTime = scanner.nextLine();
+
+        Appointment appointment = new Appointment(0, patientId, doctorId, appointmentDate, appointmentTime);
+        if (userDao.scheduleAppointment(appointment)) {
+            System.out.println("Appointment scheduled successfully!");
+        } else {
+            System.out.println("Failed to schedule appointment. Try again.");
+        }
+    }
+
+    private static void viewReminders() {
         System.out.println("Enter user ID:");
-        int id = scanner.nextInt();
-        boolean success = userDao.deleteUser(id);
-        if (success) {
-            System.out.println("User deleted successfully.");
+        int userId = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        List<Reminder> reminders = userDao.getRemindersByUserId(userId);
+        if (reminders.isEmpty()) {
+            System.out.println("No reminders found.");
         } else {
-            System.out.println("Failed to delete user.");
-        }
-    }
-
-    private static void verifyPassword(Scanner scanner) {
-        System.out.println("Enter email:");
-        String email = scanner.nextLine();
-
-        System.out.println("Enter password:");
-        String password = scanner.nextLine();
-
-        boolean isValid = userDao.verifyPassword(email, password);
-        if (isValid) {
-            System.out.println("Password is correct.");
-        } else {
-            System.out.println("Password is incorrect.");
-        }
-    }
-
-    private static void getDoctorById(Scanner scanner) {
-        System.out.println("Enter doctor ID:");
-        int id = scanner.nextInt();
-        Doctor doctor = userDao.getDoctorById(id);
-        if (doctor != null) {
-            System.out.println("Doctor found: " + doctor.getFirstName() + " " + doctor.getLastName());
-        } else {
-            System.out.println("Doctor not found.");
-        }
-    }
-
-    private static void getPatientsByDoctorId(Scanner scanner) {
-        System.out.println("Enter doctor ID:");
-        int id = scanner.nextInt();
-        List<User> patients = userDao.getPatientsByDoctorId(id);
-        if (!patients.isEmpty()) {
-            System.out.println("Patients for doctor with ID " + id + ":");
-            for (User patient : patients) {
-                System.out.println(patient.getFirstName() + " " + patient.getLastName());
+            System.out.println("Reminders:");
+            for (Reminder reminder : reminders) {
+                System.out.println(reminder.toString());
             }
+        }
+    }
+
+    private static void createReminder() {
+        System.out.println("Enter user ID:");
+        int userId = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        System.out.println("Enter reminder description:");
+        String description = scanner.nextLine();
+
+        System.out.println("Enter reminder date (YYYY-MM-DD):");
+        String reminderDate = scanner.nextLine();
+
+        Reminder reminder = new Reminder(0, userId, description, reminderDate);
+        if (userDao.createReminder(reminder)) {
+            System.out.println("Reminder created successfully!");
         } else {
-            System.out.println("No patients found for doctor with ID " + id + ".");
+            System.out.println("Failed to create reminder. Try again.");
         }
     }
 }
