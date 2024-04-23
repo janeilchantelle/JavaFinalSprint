@@ -1,8 +1,6 @@
 
 
 // import com.DataBaseConnection;
-import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +34,7 @@ public class HealthMonitoringApp {
 
         List<User> userList = new ArrayList<>();
 
-        User user1 = new User(5,"Ainee", "Malik","qmalik@gmail.com", "guggu", false);
+        User user1 = new User(5,"Dalilah", "Dalilah","dalilah@gmail.com", "guggu", false);
         userList.add(user1);
 
         for (User users : userList) {
