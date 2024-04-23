@@ -1,0 +1,99 @@
+JavaFinalSprint Documentation
+
+User Documentation
+
+Overview
+
+The Health Monitoring Application is designed to help manage and monitor the health records of patients, assigned by doctors. It provides functionalities for user registration, role-based login, appointment scheduling, and health data analytics.
+
+Classes and their Functionality
+
+User: Represents a general user with basic information such as ID, first name, last name, email, password, and role (Admin, Doctor, Patient).
+
+Doctor: Extends the User class and adds doctor-specific information like medical license number and specialization.
+
+Appointment: Represents an appointment between a doctor and a patient, with details like appointment ID, doctor ID, patient ID, date, and time.
+
+HealthMonitoringApp: Main class containing the main method to run the application and demonstrate its functionalities.
+
+UserDao: Data Access Object (DAO) class responsible for database operations related to User entities.
+
+DatabaseConnection: Singleton class to manage database connections.
+
+Accessing the Application
+
+Clone the repository:
+
+git clone https://github.com/janeilchantelle/JavaFinalSprint.git
+
+Compile the code:
+
+javac -cp ".:postgresql-42.6.0.jar" *.java
+
+Run the application:
+
+java -cp ".:postgresql-42.6.0.jar" HealthMonitoringApp
+Development Documentation
+
+Javadocs
+Javadocs are included in the source code to provide detailed descriptions of classes, methods, and variables.
+
+Directory Structure
+
+HealthMonitoringApp.java: Main class
+
+User.java: User class
+
+Doctor.java: Doctor class
+
+Appointment.java: Appointment class
+
+UserDao.java: Data Access Object class
+
+DatabaseConnection.java: Database connection management class
+Build Process
+Navigate to the project directory:
+
+cd JavaFinalSprint
+
+Compile the code:
+
+javac -cp ".:postgresql-42.6.0.jar" *.java
+Compiler Time Dependencies
+Java 8 or higher
+PostgreSQL database
+JDBC driver (postgresql-42.6.0.jar)
+
+Development Standards
+Follow the Java naming conventions
+Use meaningful variable and method names
+Implement exception handling
+
+Database Setup
+Install PostgreSQL
+
+Create a new database named health_monitoring
+Import the SQL schema provided in the database_schema.sql file
+
+Source Code Repository
+The source code is available on GitHub at JavaFinalSprint.
+
+Deployment Documentation
+
+Installation Steps
+
+Clone the repository:
+
+git clone https://github.com/janeilchantelle/JavaFinalSprint.git
+
+Navigate to the project directory:
+
+cd JavaFinalSprint
+
+Compile the code:
+
+javac -cp ".:postgresql-42.6.0.jar" *.java
+
+Run the application:
+
+java -cp ".:postgresql-42.6.0.jar" HealthMonitoringApp
