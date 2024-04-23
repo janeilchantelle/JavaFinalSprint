@@ -1,20 +1,7 @@
-
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * The MedicineReminderManager class should have methods to add reminders, get reminders
- *  1. for a specific user, and
- *  2. get reminders that are DUE for a specific user.
- *
- *  You'll need to integrate this class with your application and database logic to
- *  1. store,
- *  2. update, and
- *  3. delete reminders as needed.
- */
 
 public class MedicineReminderManager {
     private List<MedicineReminder> reminders;
@@ -29,8 +16,11 @@ public class MedicineReminderManager {
 
     public List<MedicineReminder> getRemindersForUser(int userId) {
         List<MedicineReminder> userReminders = new ArrayList<>();
-        // Write your logic here
-
+        for (MedicineReminder reminder : reminders) {
+            if (reminder.getUserId() == userId) {
+                userReminders.add(reminder);
+            }
+        }
         return userReminders;
     }
 
@@ -39,7 +29,14 @@ public class MedicineReminderManager {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        // Write your logic here
+        for (MedicineReminder reminder : reminders) {
+            // Here, you need to implement the logic to check if the reminder is due
+            // For now, let's just check if the current time is after the reminder's schedule
+            LocalDateTime reminderTime = LocalDateTime.parse(reminder.getSchedule(), formatter);
+            if (now.isAfter(reminderTime)) {
+                dueReminders.add(reminder);
+            }
+        }
 
         return dueReminders;
     }

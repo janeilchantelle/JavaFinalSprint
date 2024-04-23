@@ -5,22 +5,21 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    // private static final String url = "jdbc:postgresql://localhost:5432/APJavaFinalSprint";
-    private static final String url = "jdbc:postgresql://localhost:5432/apjavafinalsprint";
-    private static final String user = "postgres";
-    private static final String password = "password";
 
-    public static Connection getCon(){
-        Connection connection = null;
-        try{
-            Class.forName("org.postgresql.Driver");     // For Postgres
-//            Class.forName("com.mysql.jdbc.Driver");  // For MySQL
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException | SQLException  e) {
+    private static final String URL = "jdbc:postgresql://localhost:5432/Health_Monitor";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password";
+
+    public static Connection getCon() {
+        Connection con = null;
+        try {
+            Class.forName("org.postgresql.Driver");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-        return connection;
+        return con;
     }
-
-
 }
+
+
