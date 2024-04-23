@@ -1,3 +1,18 @@
+You're right. The current CLI application is quite basic and lacks features that would make it a fully functional health monitoring system. Here are some additional features we could consider adding to the CLI to make it more comprehensive:
+
+1. **Reminder System:** The system could send reminders to patients for upcoming appointments or medication timings.
+2. **Appointment Scheduling:** Allow doctors to schedule appointments with their patients.
+3. **Medical Records:** Store and manage medical records for each patient.
+4. **Search Functionality:** Implement search functionality to find users or patients by their name, email, or ID.
+5. **User Authentication:** Add a login system for users to access their profiles securely.
+6. **Data Validation:** Implement validation checks to ensure that the data entered is correct and consistent.
+7. **Error Handling:** Enhance error handling to provide meaningful error messages to the user.
+
+Let's start by updating the README to reflect the current features and then proceed to add some of the missing functionalities to the CLI application.
+
+Here's an updated README:
+
+---
 
 # Health Monitoring System
 
@@ -11,6 +26,24 @@ The Health Monitoring System is designed to manage patient and doctor informatio
 - **Patient Management:** Assign patients to doctors and retrieve a list of patients for a specific doctor.
 - **Doctor Management:** Retrieve doctor details, including medical license numbers and specializations.
 - **Password Verification:** Securely verify user passwords during login.
+- **Basic CLI Interface:** A command-line interface to interact with the system.
+
+## Class Diagram
+
+Here's a simplified class diagram illustrating the associations between classes:
+
+```
+    +----------------+       +-----------+       +-------------+
+    |     User       |<------|  Doctor   |------>|  Patient    |
+    +----------------+       +-----------+       +-------------+
+    | - id: int      |       | - id: int |       | - id: int   |
+    | - firstName    |       | - firstName |     | - doctor_id |
+    | - lastName     |       | - lastName  |     | - user_id   |
+    | - email        |       | - email     |     +-------------+
+    | - password     |      | - password  |
+    | - isDoctor     |      | - isDoctor  |
+    +----------------+      +-------------+
+```
 
 ## User Documentation
 
@@ -91,6 +124,5 @@ git clone https://github.com/janeilchantelle/JavaFinalSprint.git
 1. Clone the repository from GitHub.
 2. Set up the PostgreSQL database and import the provided SQL schema.
 3. Compile and run the application using the provided commands.
-
 
 ---
