@@ -1,9 +1,14 @@
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class UserDao {
 
@@ -166,17 +171,75 @@ public class UserDao {
     public boolean scheduleAppointment(Appointment appointment) {
         String query = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?)";
         try (Connection con = DatabaseConnection.getCon();
-            PreparedStatement statement = con.prepareStatement(query)) {
+             PreparedStatement statement = con.prepareStatement(query)) {
+             
+            // Check if patient_id exists in doctor_patient table
+            if (!relationExists(appointment.getPatientId(), "patient_id")) {
+                System.out.println("Invalid patient ID. Please enter a valid patient ID.");
+                return false;
+            }
+            
+            // Check if doctor_id exists in doctor_patient table
+            if (!relationExists(appointment.getDoctorId(), "doctor_id")) {
+                System.out.println("Invalid doctor ID. Please enter a valid doctor ID.");
+                return false;
+            }
+    
             statement.setInt(1, appointment.getPatientId());
             statement.setInt(2, appointment.getDoctorId());
-            statement.setString(3, appointment.getAppointmentDate());
-            statement.setString(4, appointment.getAppointmentTime());
+            
+            // Convert Java's String date to java.sql.Date
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date date = sdf.parse(appointment.getAppointmentDate());
+            Date sqlDate = new Date(date.getTime());
+            statement.setDate(3, sqlDate); // Use java.sql.Date here
+            
+            // Convert Java's String time to java.sql.Time
+            SimpleDateFormat stf = new SimpleDateFormat("HH:mm");
+            java.util.Date time = stf.parse(appointment.getAppointmentTime());
+            Time sqlTime = new Time(time.getTime());
+            statement.setTime(4, sqlTime); // Use java.sql.Time here
+            
             return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
+        } catch (SQLException | ParseException e) {
             e.printStackTrace();
             return false;
         }
     }
+    
+    private boolean relationExists(int userId, String column) {
+        String query = "SELECT COUNT(*) FROM doctor_patient WHERE " + column + " = ?";
+        try (Connection con = DatabaseConnection.getCon();
+             PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    
+    private boolean relationExists(int userId) {
+        String query = "SELECT COUNT(*) FROM doctor_patient WHERE patient_id = ? OR doctor_id = ?";
+        try (Connection con = DatabaseConnection.getCon();
+             PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, userId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    
 
     public boolean createReminder(Reminder reminder) {
         String query = "INSERT INTO reminders (user_id, description, reminder_date) VALUES (?, ?, ?)";

@@ -13,22 +13,6 @@ The Health Monitoring System is designed to manage patient and doctor informatio
 - **Password Verification:** Securely verify user passwords during login.
 - **Basic CLI Interface:** A command-line interface to interact with the system.
 
-## Class Diagram
-
-Here's a simplified class diagram illustrating the associations between classes:
-
-```
-    +----------------+       +-----------+       +-------------+
-    |     User       |<------|  Doctor   |------>|  Patient    |
-    +----------------+       +-----------+       +-------------+
-    | - id: int      |       | - id: int |       | - id: int   |
-    | - firstName    |       | - firstName |     | - doctor_id |
-    | - lastName     |       | - lastName  |     | - user_id   |
-    | - email        |       | - email     |     +-------------+
-    | - password     |      | - password  |
-    | - isDoctor     |      | - isDoctor  |
-    +----------------+      +-------------+
-```
 
 ## User Documentation
 

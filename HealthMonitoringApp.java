@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Scanner;
 
+
 public class HealthMonitoringApp {
     private static final UserDao userDao = new UserDao();
     private static final Scanner scanner = new Scanner(System.in);
@@ -86,18 +87,18 @@ public class HealthMonitoringApp {
     private static void scheduleAppointment() {
         System.out.println("Enter patient ID:");
         int patientId = scanner.nextInt();
-        scanner.nextLine();
-
+        scanner.nextLine();  // Consume newline
+    
         System.out.println("Enter doctor ID:");
         int doctorId = scanner.nextInt();
-        scanner.nextLine();
-
+        scanner.nextLine();  // Consume newline
+    
         System.out.println("Enter appointment date (YYYY-MM-DD):");
         String appointmentDate = scanner.nextLine();
-
+    
         System.out.println("Enter appointment time (HH:MM):");
         String appointmentTime = scanner.nextLine();
-
+    
         Appointment appointment = new Appointment(0, patientId, doctorId, appointmentDate, appointmentTime);
         if (userDao.scheduleAppointment(appointment)) {
             System.out.println("Appointment scheduled successfully!");
@@ -105,6 +106,7 @@ public class HealthMonitoringApp {
             System.out.println("Failed to schedule appointment. Try again.");
         }
     }
+    
 
     private static void viewReminders() {
         System.out.println("Enter user ID:");
